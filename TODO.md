@@ -1,0 +1,3 @@
+- use QModbus instead of libmodbus
+- deploy the current project
+- create a project with libmodbus **inside** for deployment
