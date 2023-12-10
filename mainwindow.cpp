@@ -8,7 +8,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     setFixedSize(800,600);
-    SETADD; // this macro files the m_vectors to the proper values  FOR EASY ADDING REGISTERS
     mySetupUi();
 #ifdef SIMUL
     TRACE("tr(running in simulation mode)");
@@ -165,6 +164,7 @@ void MainWindow::connectDevice() {
 #endif
 
 void MainWindow::mySetupUi(){
+    SETADD; // this macro files the m_vectors to the proper values  FOR EASY ADDING REGISTERS
     m_labelsName = {ui->label,
                                     ui->label_2,
                                     ui->label_3,
@@ -230,8 +230,8 @@ void MainWindow::mySetupUi(){
         names.push_back(name);
         m_adds.push_back(add);
         m_registerVals.push_back(-1);
+        m_modifiables.push_back(MODIFIABLES.contains(name));
     }
-
     for(int i=0;i<m_nReg;i++) {
         m_labelsName[i]->setGeometry(QRect(10,100+i*25,120,60));// left,top,width,heght
         m_labelsName[i]->setText(names[i]);
@@ -242,6 +242,7 @@ void MainWindow::mySetupUi(){
         m_labelsValue[i]->setVisible(0);
         m_lineEditsValue[i]->setVisible(0);
         m_lineEditsValue[i]->setValidator(new QIntValidator(this));
+        m_lineEditsValue[i]->setEnabled(m_modifiables[i]);
     }
 
     ui->connectBtn->setGeometry(400-40,200,80,20);

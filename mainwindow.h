@@ -20,7 +20,9 @@
     m_NamesAdd[tr("Puissance limite haute")] = 0x97;\
     m_NamesAdd[tr("Debit bas")]              = 0xA0;\
     m_NamesAdd[tr("Debit haut")]             = 0xA1;\
-    m_nReg = m_NamesAdd.size();
+    m_nReg = m_NamesAdd.size();\
+    QVector<QString> MODIFIABLES = {"Consigne puissance","Consigne debit","Puissance limite basse",\
+"Puissance limite haute","Debit bas","Debit haut"};
 
 
 #include <QMainWindow>
@@ -58,7 +60,7 @@ private:
     QVector<QLabel*> m_labelsValue;
     QVector<QLabel*> m_labelsName;
     QVector<QLineEdit*> m_lineEditsValue;
-
+    QVector<int> m_modifiables;
     void mySetupUi();
     void connectDevice();
     void updateValuesOnGui();

@@ -18,19 +18,14 @@ HEADERS += \
 FORMS += \
     mainwindow.ui
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
-
-win32: LIBS += -L/msys64/mingw64/lib/ -lmodbus.dll
-
-INCLUDEPATH += /msys64/mingw64/include
-DEPENDPATH += /msys64/mingw64/include
-
-win32:!win32-g++: PRE_TARGETDEPS += /msys64/mingw64/lib/modbus.dll.lib
-else:win32-g++: PRE_TARGETDEPS += /msys64/mingw64/lib/libmodbus.dll.a
-
 DISTFILES += \
     README.md \
     TODO.md
+
+win32: LIBS += -L$$PWD/../../../../../../../../mingw64/lib/ -lmodbus.dll
+
+INCLUDEPATH += $$PWD/../../../../../../../../mingw64/include
+DEPENDPATH += $$PWD/../../../../../../../../mingw64/include
+
+win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../../../../../../../../mingw64/lib/libmodbus.dll.lib
+else:win32-g++: PRE_TARGETDEPS += $$PWD/../../../../../../../../mingw64/lib/libmodbus.dll.a

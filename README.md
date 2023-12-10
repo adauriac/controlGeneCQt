@@ -1,10 +1,15 @@
 # Généralités
 Utilise la librairie *libmodbus* obtenue avec pacman mingw-w64-x86_64-libmodbus-git. 
-Cette libraririe s'ajoute au projet en cliquant sur
-le fond du fichier .pro. Il faut penser à ajouter dans le kit de QTCreator à 
-la variable d'environement $Path le répertoire *modbus/bin* 
-(le répertoire *modbus/lib* est automatiquement ajouté à l'insertion de la librairie). Il faut penser a transformer libmodbus.dll.a en modbus.dll en DEUX endroits dans ce qui est rajoté au fichier .pro
-
+Pour installer un nouveau repo local:
+- un répertoire contient seulement controlGene.pro main.cpp mainwindow.cpp mainwindow.h mainwindow.ui
+- ouvrir QTCreator et le projet *controlGene.pro* choisir le kit "mingw64"
+- en cliquant sur le fond de controlGene.pro ajouter une library extern et choisir avec le
+file selector de windows le fichier libmodbus.dll.a
+- ceci a modifié *controlGene.pro* **il faut corriger ce qui a été rajouté** : 
+dans l'affectation de LIBS il faut remplacer libmodbus.dll par modbus.dll (car gcc rajoute le lib)
+- Il faut alors choisir l'icone "Projects" à gauche puis choisr "run" (flèche verte) et 
+ajouter à la variable d'environnement $Path, avec le file selector de windows, le répertoire 
+qui a le même début que la lib mais en choisissant mingw64/bin 
 
 # Avertissement
 Deux modes entre lesquels on bascule en recompilant avec le flag SIMUL défini ou pas
