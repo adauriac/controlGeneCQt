@@ -3,7 +3,8 @@ Utilise la librairie *libmodbus* obtenue avec pacman mingw-w64-x86_64-libmodbus-
 Cette libraririe s'ajoute au projet en cliquant sur
 le fond du fichier .pro. Il faut penser à ajouter dans le kit de QTCreator à 
 la variable d'environement $Path le répertoire *modbus/bin* 
-(le répertoire *modbus/lib* est automatiquement ajouté à l'insertion de la librairie).
+(le répertoire *modbus/lib* est automatiquement ajouté à l'insertion de la librairie). Il faut penser a transformer libmodbus.dll.a en modbus.dll en DEUX endroits dans ce qui est rajoté au fichier .pro
+
 
 # Avertissement
 Deux modes entre lesquels on bascule en recompilant avec le flag SIMUL défini ou pas

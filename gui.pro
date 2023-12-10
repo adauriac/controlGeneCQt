@@ -23,13 +23,13 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-win32: LIBS += -L$$PWD/../../../../../../../../../msys64/mingw64/lib/ -lmodbus.dll
+win32: LIBS += -L/msys64/mingw64/lib/ -lmodbus.dll
 
-INCLUDEPATH += $$PWD/../../../../../../../../../msys64/mingw64/include
-DEPENDPATH += $$PWD/../../../../../../../../../msys64/mingw64/include
+INCLUDEPATH += /msys64/mingw64/include
+DEPENDPATH += /msys64/mingw64/include
 
-win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../../../../../../../../../msys64/mingw64/lib/modbus.dll.lib
-else:win32-g++: PRE_TARGETDEPS += $$PWD/../../../../../../../../../msys64/mingw64/lib/libmodbus.dll.a
+win32:!win32-g++: PRE_TARGETDEPS += /msys64/mingw64/lib/modbus.dll.lib
+else:win32-g++: PRE_TARGETDEPS += /msys64/mingw64/lib/libmodbus.dll.a
 
 DISTFILES += \
     README.md \
