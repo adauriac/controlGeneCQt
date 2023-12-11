@@ -774,8 +774,8 @@
    <widget class="QPushButton" name="sendValuesBtn">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>210</y>
+      <x>560</x>
+      <y>220</y>
       <width>131</width>
       <height>24</height>
      </rect>
@@ -795,6 +795,19 @@
     </property>
     <property name="text">
      <string>Connect</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="watchdogButton">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>360</y>
+      <width>131</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>turn watchdog on</string>
     </property>
    </widget>
   </widget>

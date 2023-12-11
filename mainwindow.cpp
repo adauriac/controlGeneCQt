@@ -58,23 +58,21 @@ void MainWindow::connectDevice() {
 
 #else
 int MainWindow::setValues()
-    // register values are written to the modbus from vector m_registerVals
+    // modifiable register values are written to the modbus from vector m_registerVals
     // number of values effectively written is returned
 {
-//    QString BIDON="From setvalues I send:\n ";
     int cpt=0;
     for (uint i=0;i<m_registerVals.size();i++) {
+        if (!m_modifiables[i])
+            continue;
         int addr = m_adds[i];
         uint16_t dest = m_valuesToSend[i];
-//        BIDON += QString::number(i)+" "+QString::number(addr)+" "+QString::number(dest)+"\n";
         if (modbus_write_registers(m_ctx,addr,1,&dest) == 1)
             cpt++;
         else {
-            TRACE(QString::number(i)+"th registers could not be written");
-            return i;
+            EXIT("Register at " +QString::number(addr)+" could not be written");
         }
     }
-//    TRACE(BIDON);
     return cpt;
 }      // FIN int MainWindow::setValues()
 // ******************************************************************************************
@@ -84,20 +82,16 @@ int MainWindow::getValues()
     // number of values effectively read is returned
 {
     int cpt=0;
-//    QString BIDON="From getvalues I read:\n ";
     for (uint i=0;i<m_registerVals.size();i++) {
         int addr = m_adds[i];
         uint16_t dest;
         if (modbus_read_registers(m_ctx,addr,1,&dest) == 1)
             cpt++;
         else {
-           TRACE(QString::number(i)+"th registers could not be read");
-            return i;
+            EXIT("Register at " +QString::number(addr)+" could not be read");
         }
         m_registerVals[i] = dest;
-//        BIDON += QString::number(i)+" "+QString::number(addr)+" "+QString::number(dest)+"\n";
     }
-//    TRACE(BIDON);
     return cpt;
 }    // FIN int MainWindow::getValues()
 // ******************************************************************************************
@@ -118,7 +112,7 @@ void MainWindow::connectDevice() {
         m_NOTConnected = 1;
         return ;
     }
-    modbus_set_debug(m_ctx, 1);
+    //modbus_set_debug(m_ctx, 1);
     int con = modbus_connect(m_ctx);
     if (con == -1) {
         //fprintf(stderr, "Connection failed: %s\n", modbus_strerror(errno));
@@ -134,6 +128,7 @@ void MainWindow::connectDevice() {
         m_NOTConnected = 2;
         return ;
     }
+    //modbus_set_response_timeout(m_ctx, 0, MODBUS_ACCESS_REG_TIMEOUT_MILLISEC);
 
     int ma = ui->master->currentText().toInt();
     if (modbus_set_slave(m_ctx, ma) == -1) {
@@ -143,6 +138,7 @@ void MainWindow::connectDevice() {
         m_NOTConnected = 3;
         return ;
     }
+    ui->watchdogButton->setVisible(1);
     m_NOTConnected = 0;
     ui->connectBtn->setVisible(0);
     ui->sendValuesBtn->setVisible(1);
@@ -152,11 +148,9 @@ void MainWindow::connectDevice() {
         m_labelsName[i]->setVisible(1);
         m_lineEditsValue[i]->setVisible(1);
     }
-    if (getValues()!=m_labelsValue.size()) {
-        EXIT("tr(could not read all registers)");
-    }
-    for (uint i=0;i<m_nReg;i++)
+    for (int i=0;i<m_nReg;i++)
         m_lineEditsValue[i]->setText(QString::number(m_registerVals[i])); // since updateValueOnGui will send these values
+    checkAlive();
     updateValuesOnGui();
     return ;
 }     // FIN void MainWindow::connectDevice()
@@ -246,22 +240,54 @@ void MainWindow::mySetupUi(){
     }
 
     ui->connectBtn->setGeometry(400-40,200,80,20);
+
     ui->sendValuesBtn->setGeometry(400,100+20+7*25,140,20);
     connect(ui->sendValuesBtn,&QPushButton::clicked,this,&MainWindow::updateValuesOnGui);
     connect(ui->connectBtn,&QPushButton::clicked,this,&MainWindow::connectDevice);
     ui->sendValuesBtn->setVisible(0);
+
+    ui->watchdogButton->setVisible(0);
+    ui->watchdogButton->setGeometry(400+200,100+20+7*25,140,20);
+    ui->watchdogButton->setText("turn watchdog on");
+    connect(ui->watchdogButton,&QPushButton::clicked,this,&MainWindow::toggleWatchdog);
+    m_timer = new QTimer(this);
+    m_timer->setInterval(WATCHDOG_TIME_MILLISEC);
+    connect(m_timer, &QTimer::timeout, this, &MainWindow::checkAlive);
+    m_bidon = 0;
 }    // FIN void MainWindow::mySetupUi()
 // **********************************************************************************************
+
+void MainWindow::checkAlive() {
+    uint16_t dest=123;
+    int k = modbus_read_registers(m_ctx,ALIVE_ADDRESS,1,&dest);
+    if (k != 1) {
+        EXIT("Version register "+QString::number(ALIVE_ADDRESS)+" is unaccessible< Probably the board is not powered");
+    }
+    if (dest != ALIVE_VALUE) {
+        EXIT("Unexpected value "+QString::number(dest)+ " instead of "+QString::number(ALIVE_VALUE)+" in version Register "+QString::number(ALIVE_ADDRESS));
+    }
+}    // FIN void MainWindow::checkAlive()
+// **********************************************************************************************
+
+void MainWindow::toggleWatchdog() {
+    if (ui->watchdogButton->text() == "turn watchdog on") {
+        ui->watchdogButton->setText("turn watchdog off");
+        m_timer->start();
+    } else {
+        ui->watchdogButton->setText("turn watchdog on");
+        m_timer->stop();
+    }
+}    // FIN void MainWindow::toggleWatchdog()
+// **********************************************************************************************
+
 
 void MainWindow::updateValuesOnGui() {
     // Writing board's registers
     for (int i=0;i<m_nReg;i++)
         m_valuesToSend[i] =  m_lineEditsValue[i]->text().toInt();
-    if (setValues() != m_nReg)
-        EXIT("Could not write all registers");
+    setValues();
     // Reading board registers
-    if (getValues() != m_nReg)
-        EXIT("Could not read all registers");
+    getValues();
     // Checking consistency
     for(int i=0;i<m_nReg;i++)
         if (m_registerVals[i] != m_valuesToSend[i])

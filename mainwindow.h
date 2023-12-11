@@ -24,12 +24,25 @@
     QVector<QString> MODIFIABLES = {"Consigne puissance","Consigne debit","Puissance limite basse",\
 "Puissance limite haute","Debit bas","Debit haut"};
 
+#define ALIVE_ADDRESS 205
+#define ALIVE_VALUE 330
+#define WATCHDOG_TIME_MILLISEC 1000
+//#define MODBUS_ACCESS_REG_TIMEOUT_MILLISEC 5 NOT USED
+/*
+ *  Connect to the board through an usb line. The parameters can be changed from the GUI,
+ *  the possible and default values are set in the comboboxes of mainwindow.ui.
+ *  A watchgod can be run at a frequency set by WATCHDOG_TIME_MILLISEC above.
+ *  In case of any error (serial connection close or board not powered) the application finish with an explicit error message.
+ *  When sending values all values are sent and re-read.
+ *  To add a register modify the macro SETADD above (don't forget to modify also MODIFIABNLES if necessary)
+ */
 
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QString>
 #include <QGridLayout>
 #include <QLineEdit>
+#include <QTimer>
 
 #include <modbus/modbus.h>
 
@@ -53,6 +66,7 @@ private:
     QVector<int> m_adds;
     QVector<int> m_registerVals;
     QVector<int> m_valuesToSend;
+    int m_bidon; // testing purpose
 #ifdef SIMUL
     QVector<int> m_fake;
 #endif
@@ -61,11 +75,15 @@ private:
     QVector<QLabel*> m_labelsName;
     QVector<QLineEdit*> m_lineEditsValue;
     QVector<int> m_modifiables;
+    QTimer *m_timer;
+
     void mySetupUi();
     void connectDevice();
     void updateValuesOnGui();
+    void toggleWatchdog();
     int getValues(); // register values are read from the modbus
     int setValues(); // register values are written to the modbus
+    void checkAlive();
 };
 
 #define TRACE(msg) {QMessageBox mb;mb.setText(msg);mb.exec();}
