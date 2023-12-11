@@ -66,7 +66,6 @@ private:
     QVector<int> m_adds;
     QVector<int> m_registerVals;
     QVector<int> m_valuesToSend;
-    int m_bidon; // testing purpose
 #ifdef SIMUL
     QVector<int> m_fake;
 #endif

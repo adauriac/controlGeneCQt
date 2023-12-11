@@ -148,10 +148,12 @@ void MainWindow::connectDevice() {
         m_labelsName[i]->setVisible(1);
         m_lineEditsValue[i]->setVisible(1);
     }
-    for (int i=0;i<m_nReg;i++)
-        m_lineEditsValue[i]->setText(QString::number(m_registerVals[i])); // since updateValueOnGui will send these values
     checkAlive();
-    updateValuesOnGui();
+    getValues();
+    for (int i=0;i<m_nReg;i++) {
+        m_lineEditsValue[i]->setText(QString::number(m_registerVals[i]));
+        m_labelsValue[i]->setText(QString::number(m_registerVals[i]));
+    }
     return ;
 }     // FIN void MainWindow::connectDevice()
 // ***************************************************************************************************************
@@ -253,7 +255,6 @@ void MainWindow::mySetupUi(){
     m_timer = new QTimer(this);
     m_timer->setInterval(WATCHDOG_TIME_MILLISEC);
     connect(m_timer, &QTimer::timeout, this, &MainWindow::checkAlive);
-    m_bidon = 0;
 }    // FIN void MainWindow::mySetupUi()
 // **********************************************************************************************
 
