@@ -66,9 +66,6 @@ private:
     QVector<int> m_adds;
     QVector<int> m_registerVals;
     QVector<int> m_valuesToSend;
-#ifdef SIMUL
-    QVector<int> m_fake;
-#endif
     int m_NOTConnected;
     QVector<QLabel*> m_labelsValue;
     QVector<QLabel*> m_labelsName;

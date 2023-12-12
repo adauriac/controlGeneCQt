@@ -9,14 +9,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setFixedSize(800,600);
     mySetupUi();
-#ifdef SIMUL
-    TRACE("tr(running in simulation mode)");
-    m_fake.resize(m_registerVals.size(),-2);
-    m_NOTConnected = 0;
-    ui->labelSimul->setVisible(1);
-    for(uint i=0;i<m_nReg;i++)
-        m_fake.push_back(-i);
-#endif
     m_registerVals.resize(m_nReg);
     m_valuesToSend.resize(m_nReg);
 }
@@ -26,37 +18,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-#ifdef SIMUL
-int MainWindow::setValues() {
-    for(uint i=0;i<m_nReg;i++)
-        m_fake[i] = m_valuesToSend[i];
-    return m_nReg;
-}    // FIN int MainWindow::setValues()
-// ******************************************************************************************
-
-int MainWindow::getValues() {
-    for(uint i=0;i<m_nReg;i++)
-        m_registerVals[i] = m_fake[i];
-    return m_nReg;
-}    // FIN int MainWindow::getValues()
-// ******************************************************************************************
-
-void MainWindow::connectDevice() {
-    ui->connectBtn->setVisible(0);
-    ui->sendValuesBtn->setVisible(1);
-    for(uint i=0;i<m_labelsValue.size();i++) {
-        m_labelsValue[i]->setVisible(1);
-        m_labelsName[i]->setVisible(1);
-        m_lineEditsValue[i]->setVisible(1);
-    }
-    for (uint i=0;i<m_nReg;i++)
-        m_lineEditsValue[i]->setText(QString::number(m_registerVals[i])); // since updateValueOnGui will send these values
-    updateValuesOnGui();
-    ui->statusbar->showMessage(tr("connected"));
-}    // FIN void MainWindow::connectDevice()
-// ******************************************************************************************
-
-#else
 int MainWindow::setValues()
     // modifiable register values are written to the modbus from vector m_registerVals
     // number of values effectively written is returned
@@ -157,7 +118,6 @@ void MainWindow::connectDevice() {
     return ;
 }     // FIN void MainWindow::connectDevice()
 // ***************************************************************************************************************
-#endif
 
 void MainWindow::mySetupUi(){
     SETADD; // this macro files the m_vectors to the proper values  FOR EASY ADDING REGISTERS
